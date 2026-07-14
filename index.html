@@ -355,30 +355,6 @@ const mathPool = [
   {q:"Kolik je ¼ + ⅛?", a:["²⁄₁₂","³⁄₈","¹⁄₆","⁵⁄₈"], correct:1, type:"math"},
 ];
 
-// 🌶️ Pikantní otázky – bez špatné odpovědi, ale odpovědi se počítají… 😏
-const spicyPool = [
-  {q:"Myslíš na mě někdy? 😏", a:["Občas","Pořád"]},
-  {q:"Co je na mně nejhezčí? 😏", a:["Úsměv","Všechno"]},
-  {q:"Polibek na prvním rande? 💋", a:["Proč ne","Uvidíme"]},
-  {q:"Držení za ruce na veřejnosti? 🤝", a:["Jasně","Stydím se"]},
-  {q:"Objetí zezadu? 🫂", a:["Miluju","Radši zepředu"]},
-  {q:"Pusa na čelo, nebo na tvář? 💋", a:["Na čelo","Na tvář"]},
-  {q:"Rande snů: západ slunce, nebo noční procházka? 🌅🌙", a:["Západ slunce","Noční procházka"]},
-  {q:"Pomalý tanec, i když to neumíme? 💫", a:["Jdu do toho","Stydím se"]},
-  {q:"Tanec v kuchyni při vaření? 🕺", a:["Rozhodně","Haha ne"]},
-  {q:"Zprávy na dobrou noc? 🌙", a:["Chci je","Cringe"]},
-  {q:"Roztomilé přezdívky? 🥰", a:["Miluju","Cringe"]},
-  {q:"Milostný dopis: romantika, nebo cringe? 💌", a:["Romantika","Cringe"]},
-  {q:"Kdo píše první „dobré ráno“? ☀️", a:["Já","Ty"]},
-  {q:"Sdílení jídla na rande? 🍝", a:["Jasně","Moje jídlo!"]},
-  {q:"První rande: kino, nebo večeře při svíčkách? 🎬🕯️", a:["Kino","Večeře"]},
-  {q:"Kdybych tě pozval na rande, řekneš…? 😏", a:["Ano","Jasně že ano"]},
-  {q:"Nejlepší místo na první pusu? 🌟", a:["Pod hvězdami","V dešti"]},
-  {q:"Flirtuješ radši očima, nebo zprávami? 👀💬", a:["Očima","Zprávami"]},
-  {q:"Piknik v parku, nebo vyhlídka nad městem? 🧺🌆", a:["Piknik","Vyhlídka"]},
-  {q:"Držet se za ruce v kině? 🎬🤝", a:["Celou dobu","Možná 😏"]},
-];
-
 // ☠️ Finální bossové – otázka č. 99 (při opakování jiný!)
 const bossPool = [
   {q:"∫<sub>0</sub><sup>2π</sup>∫<sub>0</sub><sup>π</sup>∫<sub>0</sub><sup>3</sup> r²·sin θ &nbsp;dr dθ dφ&nbsp; = ?",
@@ -402,6 +378,10 @@ const spicyPool = [
   {q:"Co ti na mně přijde nejvíc přitažlivé? 🔥", minSlov:10, spicy:true, essay:true},
   {q:"Kdybychom spolu vyrazili na výlet, kam by to bylo a proč? 🚗", minSlov:10, spicy:true, essay:true},
   {q:"Co bys mi řekla, kdyby ses vůbec nestyděla? 🙈", minSlov:10, spicy:true, essay:true},
+  {q:"Myslíš na mě někdy? Jak často a při čem? 😏", minSlov:10, spicy:true, essay:true},
+  {q:"Nejlepší místo na první pusu – a proč právě tam? 💋", minSlov:10, spicy:true, essay:true},
+  {q:"Jak by vypadal náš první společný víkend? 🌙", minSlov:10, spicy:true, essay:true},
+  {q:"Co je na mně nejhezčí? A nešetři detaily… 🥰", minSlov:10, spicy:true, essay:true},
 ];
 
 /* Sestavení kvízu – při každém (re)startu se běžné otázky zamíchají
