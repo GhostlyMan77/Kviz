@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velký kvíz o 100 otázkách 💌</title>
+<style>
+  :root{
+    --ink:#5b1a33;
+    --paper:#fff3f0;
+    --card:#ffffff;
+    --rose:#e6447a;
+    --rose-dark:#c02a5e;
+    --peach:#ffd9c7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Georgia,'Times New Roman',serif;
+    background:
+      radial-gradient(circle at 15% 20%, var(--peach) 0, transparent 30%),
+      radial-gradient(circle at 85% 80%, #ffd0dd 0, transparent 35%),
+      var(--paper);
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;overflow:hidden;
+  }
+  .card{
+    background:var(--card);
+    width:100%;max-width:480px;
+    border-radius:28px;
+    padding:36px 28px 30px;
+    box-shadow:0 18px 50px rgba(192,42,94,.18);
+    text-align:center;position:relative;
+    max-height:92vh;overflow-y:auto;
+  }
+  .counter{
+    font-family:'Courier New',monospace;
+    font-size:13px;letter-spacing:3px;
+    color:var(--rose);text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .counter b{font-size:16px}
+  h1{
+    font-size:clamp(22px,5.5vw,30px);
+    line-height:1.3;
+    font-weight:normal;
+    font-style:italic;
+    margin-bottom:26px;
+  }
+  .answers{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .answers.grid4{display:grid;grid-template-columns:1fr 1fr}
+  button{
+    font-family:inherit;font-size:17px;
+    padding:13px 24px;border-radius:999px;
+    border:2px solid var(--ink);
+    background:#fff;color:var(--ink);
+    cursor:pointer;
+    transition:transform .15s, background .15s, box-shadow .15s;
+    touch-action:manipulation;         /* mobil: bez zpoždění a zoomu při ťukání */
+    -webkit-tap-highlight-color:transparent;
+  }
+  button:hover{transform:translateY(-3px);background:var(--peach);box-shadow:0 6px 0 rgba(91,26,51,.15)}
+  button:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+  .primary{background:var(--rose);border-color:var(--rose-dark);color:#fff;font-weight:bold}
+  .primary:hover{background:var(--rose-dark)}
+  .progress{
+    height:6px;background:#ffe1ea;border-radius:99px;
+    margin-top:30px;overflow:hidden;
+  }
+  .progress span{
+    display:block;height:100%;width:0;
+    background:linear-gradient(90deg,var(--rose),#ff8fb0);
+    border-radius:99px;transition:width .4s ease;
+  }
+  .history-badge{
+    display:inline-block;background:#fff0c2;border:1.5px dashed #c99a2e;color:#8a6510;
+    font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    padding:5px 14px;border-radius:99px;margin-bottom:14px;
+    font-family:'Courier New',monospace;
+  }
+  .history-badge.spicy{background:#ffe3e3;border-color:#d64545;color:#a32020}
+  .history-badge.spicy{background:#ffe3e3;border-color:#e0484d;color:#b3272c}
+  .rules{
+    text-align:left;margin:0 auto 26px;max-width:380px;
+    font-size:16px;line-height:1.5;
+  }
+  .rules li{margin-bottom:12px;list-style:none;padding-left:34px;position:relative}
+  .rules li::before{position:absolute;left:0;top:0}
+  .rules li:nth-child(1)::before{content:"💯"}
+  .rules li:nth-child(2)::before{content:"💭"}
+  .rules li:nth-child(3)::before{content:"📜"}
+  .rules li:nth-child(4)::before{content:"😈"}
+  .rules li:nth-child(5)::before{content:"🚩"}
+  .rules li:nth-child(6)::before{content:"💌"}
+  .hint{font-size:14px;color:#b06880;margin-top:14px;min-height:1.2em;font-style:italic}
+  textarea{
+    width:100%;min-height:150px;resize:vertical;
+    font-family:inherit;font-size:16px;line-height:1.5;
+    padding:14px;border-radius:16px;
+    border:2px solid #ffd9e3;background:#fff7f4;color:var(--ink);
+    margin-bottom:6px;
+  }
+  textarea:focus{outline:none;border-color:var(--rose)}
+  button:disabled{
+    opacity:.45;cursor:not-allowed;
+    transform:none !important;box-shadow:none !important;
+  }
+  #essayBtn{margin-top:10px}
+  #btnNe.fly{position:fixed;z-index:50;transition:left .18s ease, top .18s ease}
+  .big{font-size:64px;margin-bottom:12px;animation:beat 1s infinite}
+  @keyframes beat{0%,100%{transform:scale(1)}25%{transform:scale(1.15)}40%{transform:scale(1)}55%{transform:scale(1.12)}}
+  .summary{
+    text-align:left;background:#fff7f4;border:1.5px solid #ffd9e3;
+    border-radius:16px;padding:16px;margin-top:22px;
+    max-height:220px;overflow-y:auto;font-size:14px;line-height:1.6;
+  }
+  .summary div{border-bottom:1px dashed #ffd9e3;padding:4px 0}
+  .summary div:last-child{border-bottom:none}
+  .summary .odp{color:var(--rose-dark);font-weight:bold}
+  .wrong h1{font-style:normal}
+  .heart{
+    position:fixed;top:-40px;font-size:24px;z-index:100;
+    animation:fall linear forwards;pointer-events:none;
+  }
+  @keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+  }
+  /* Mobil: menší okraje, karta přes celou šířku, klávesnice nesmí nic rozbít */
+  @media (max-width:480px){
+    body{padding:10px;align-items:flex-start;overflow-y:auto}
+    .card{padding:26px 18px 24px;max-height:none;margin-top:8px}
+    button{width:100%;padding:14px 18px}
+    .answers.grid4{grid-template-columns:1fr 1fr;gap:10px}
+    .answers.grid4 button{font-size:15px;padding:12px 8px}
+    #btnNe.fly{width:auto;padding:13px 24px}
+    h1{font-size:clamp(20px,5.5vw,26px)}
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="card"></div>
+
+<script>
+/* ====== OTÁZKY ====== */
+const fun = [
+  {q:"Sladké, nebo slané? 🍫🥨", a:["Sladké","Slané"]},
+  {q:"Pes, nebo kočka? 🐶🐱", a:["Pes","Kočka"]},
+  {q:"Ranní ptáče, nebo noční sova? 🌅🦉", a:["Ptáče","Sova"]},
+  {q:"Ananas na pizzu? 🍍🍕", a:["Jasně!","Nikdy!"]},
+  {q:"Hory, nebo moře? ⛰️🌊", a:["Hory","Moře"]},
+  {q:"Kafe, nebo čaj? ☕🍵", a:["Kafe","Čaj"]},
+  {q:"Film doma v dece, nebo kino? 🎬", a:["Doma","Kino"]},
+  {q:"Léto, nebo zima? ☀️❄️", a:["Léto","Zima"]},
+  {q:"Jaro, nebo podzim? 🌸🍂", a:["Jaro","Podzim"]},
+  {q:"Mléčná, nebo hořká čokoláda? 🍫", a:["Mléčná","Hořká"]},
+  {q:"Pizza, nebo burger? 🍕🍔", a:["Pizza","Burger"]},
+  {q:"Palačinky, nebo vafle? 🥞🧇", a:["Palačinky","Vafle"]},
+  {q:"Zmrzlina: vanilka, nebo čokoláda? 🍦", a:["Vanilka","Čokoláda"]},
+  {q:"Kečup, nebo hořčice? 🍟", a:["Kečup","Hořčice"]},
+  {q:"Sushi: dobrota, nebo fuj? 🍣", a:["Dobrota","Fuj"]},
+  {q:"Pálivé jídlo? 🌶️", a:["Miluju","Radši ne"]},
+  {q:"Svíčková, nebo guláš? 🍽️", a:["Svíčková","Guláš"]},
+  {q:"Rohlík, nebo chleba? 🥐🍞", a:["Rohlík","Chleba"]},
+  {q:"Knedlíky houskové, nebo bramborové? 🥟", a:["Houskové","Bramborové"]},
+  {q:"Kofola, nebo kola? 🥤", a:["Kofola","Kola"]},
+  {q:"Čína, nebo kebab? 🥡🌯", a:["Čína","Kebab"]},
+  {q:"Snídaně: sladká, nebo slaná? 🍳", a:["Sladká","Slaná"]},
+  {q:"Nutella lžící přímo ze sklenice? 🥄", a:["Samozřejmě","Nikdy"]},
+  {q:"Brokolice? 🥦", a:["Dobrá","Zlo"]},
+  {q:"Hranolky, nebo krokety? 🍟", a:["Hranolky","Krokety"]},
+  {q:"Křeček, nebo papoušek? 🐹🦜", a:["Křeček","Papoušek"]},
+  {q:"Delfíni, nebo tučňáci? 🐬🐧", a:["Delfíni","Tučňáci"]},
+  {q:"Pavouci? 🕷️", a:["V pohodě","AAAA!"]},
+  {q:"Pomazlit se: panda, nebo koala? 🐼🐨", a:["Panda","Koala"]},
+  {q:"Dinosauři, nebo draci? 🦖🐉", a:["Dinosauři","Draci"]},
+  {q:"Horší setkání: žralok, nebo medvěd? 🦈🐻", a:["Žralok","Medvěd"]},
+  {q:"Chytíš zlatou rybku… 🐠", a:["Tři přání!","Pustím ji"]},
+  {q:"Stan, nebo hotel? ⛺🏨", a:["Stan","Hotel"]},
+  {q:"Vlak, nebo auto? 🚂🚗", a:["Vlak","Auto"]},
+  {q:"Město, nebo venkov? 🏙️🌾", a:["Město","Venkov"]},
+  {q:"Dovolená: ležet u vody, nebo poznávat? 🏖️🗺️", a:["Ležet","Poznávat"]},
+  {q:"Letadlo: okno, nebo ulička? ✈️", a:["Okno","Ulička"]},
+  {q:"Cesta kolem světa, nebo vlastní dům? 🌍🏡", a:["Cesta","Dům"]},
+  {q:"Výlet naplánovaný, nebo naslepo? 🎒", a:["Plán","Naslepo"]},
+  {q:"Komedie, nebo horor? 😂👻", a:["Komedie","Horor"]},
+  {q:"Harry Potter, nebo Pán prstenů? ⚡💍", a:["Harry Potter","Pán prstenů"]},
+  {q:"Hudba nahlas, nebo sluchátka? 🔊🎧", a:["Nahlas","Sluchátka"]},
+  {q:"Zpíváš ve sprše? 🚿", a:["Vždycky","Nikdy"]},
+  {q:"Tanec, nebo zpěv? 💃🎤", a:["Tanec","Zpěv"]},
+  {q:"Seriál: celý za víkend, nebo po dílech? 📺", a:["Za víkend","Po dílech"]},
+  {q:"Titulky, nebo dabing? 🎞️", a:["Titulky","Dabing"]},
+  {q:"Kino: popcorn, nebo nachos? 🍿", a:["Popcorn","Nachos"]},
+  {q:"Létat, nebo být neviditelný? 🦸", a:["Létat","Neviditelnost"]},
+  {q:"Cestovat do minulosti, nebo budoucnosti? ⏳", a:["Minulost","Budoucnost"]},
+  {q:"Číst myšlenky, nebo zastavit čas? 🧠⏱️", a:["Myšlenky","Zastavit čas"]},
+  {q:"Vyhrát milion, nebo najít pravou lásku? 💰❤️", a:["Milion","Láska"]},
+  {q:"Život bez internetu, nebo bez čokolády? 📵🍫", a:["Bez internetu","Bez čokolády"]},
+  {q:"Wifi všude zdarma, nebo baterka nikdy nedojde? 📶🔋", a:["Wifi","Baterka"]},
+  {q:"Bydlet na Marsu, nebo na dně oceánu? 🚀🌊", a:["Mars","Oceán"]},
+  {q:"Superhrdina, nebo čaroděj? 🦸🧙", a:["Superhrdina","Čaroděj"]},
+  {q:"Usnout kdykoli, nebo vzbudit se vždy odpočatě? 😴✨", a:["Usnout","Odpočatě"]},
+  {q:"Super síla, nebo super rychlost? 💪⚡", a:["Síla","Rychlost"]},
+  {q:"Vždy říkat pravdu, nebo nikdy nemluvit? 🤐", a:["Pravda","Mlčet"]},
+  {q:"Robot na úklid, nebo osobní kuchař? 🤖👨‍🍳", a:["Robot","Kuchař"]},
+  {q:"Déšť za oknem: pohoda, nebo otrava? 🌧️", a:["Pohoda","Otrava"]},
+  {q:"Sníh: koulovačka, nebo teplo domova? ☃️🏠", a:["Koulovačka","Teplo"]},
+  {q:"Bouřka: fascinující, nebo děsivá? ⛈️", a:["Fascinující","Děsivá"]},
+  {q:"Ponožky v sandálech? 🧦", a:["Móda","Zločin"]},
+  {q:"Sprcha ráno, nebo večer? 🚿", a:["Ráno","Večer"]},
+  {q:"Android, nebo iPhone? 📱", a:["Android","iPhone"]},
+  {q:"Vánoce, nebo narozeniny? 🎄🎂", a:["Vánoce","Narozeniny"]},
+  {q:"Studený polštář, nebo teplá deka? 🛏️", a:["Polštář","Deka"]},
+  {q:"Výtah, nebo schody? 🛗🪜", a:["Výtah","Schody"]},
+  {q:"Zubní pasta: odspodu, nebo odprostřed? 🪥", a:["Odspodu","Odprostřed"]},
+  {q:"Toaleťák: přes, nebo pod? 🧻", a:["Přes","Pod"]},
+  {q:"Budík: hned vstát, nebo 5× odložit? ⏰", a:["Hned","Odložit"]},
+  {q:"Hlasovky, nebo psaní? 🎙️💬", a:["Hlasovky","Psaní"]},
+  {q:"Telefonát, nebo zpráva? 📞💬", a:["Telefonát","Zpráva"]},
+  {q:"Pořádek, nebo kreativní chaos? 🧹🌪️", a:["Pořádek","Chaos"]},
+  {q:"Léto bez zmrzliny, nebo zima bez horké čokolády? 🍦☕", a:["Bez zmrzliny","Bez čokolády"]},
+  {q:"Deskovky, nebo videohry? 🎲🎮", a:["Deskovky","Videohry"]},
+  {q:"Kolo, nebo brusle? 🚲🛼", a:["Kolo","Brusle"]},
+  {q:"Fotbal, nebo hokej? ⚽🏒", a:["Fotbal","Hokej"]},
+  {q:"Sauna, nebo ledová voda? 🧖🧊", a:["Sauna","Ledová voda"]},
+  {q:"Spaní: otevřené okno, nebo zavřené? 🪟", a:["Otevřené","Zavřené"]},
+  {q:"Doma: pyžamo, nebo tepláky? 🛋️", a:["Pyžamo","Tepláky"]},
+  {q:"Ráno nejdřív: mobil, nebo snídaně? 📱🍳", a:["Mobil","Snídaně"]},
+  {q:"Víkend: spát do oběda, nebo výlet? 😴🥾", a:["Spát","Výlet"]},
+  {q:"Kniha, nebo audiokniha? 📚🎧", a:["Kniha","Audiokniha"]},
+  {q:"Papírová kniha, nebo čtečka? 📖📱", a:["Papírová","Čtečka"]},
+  {q:"Matematika, nebo dějepis? ➗🏰", a:["Matematika","Dějepis"]},
+  {q:"Kreslení, nebo focení? 🎨📷", a:["Kreslení","Focení"]},
+  {q:"Karaoke? 🎤", a:["Jdu do toho!","Nikdy"]},
+  {q:"Horská dráha? 🎢", a:["Jupíí!","Ani omylem"]},
+  {q:"Croissant, nebo kobliha? 🥐🍩", a:["Croissant","Kobliha"]},
+  {q:"Špagety, nebo penne? 🍝", a:["Špagety","Penne"]},
+  {q:"Řízek, nebo smažák? 🍗🧀", a:["Řízek","Smažák"]},
+  {q:"Med, nebo marmeláda? 🍯🍓", a:["Med","Marmeláda"]},
+  {q:"Jahody, nebo maliny? 🍓", a:["Jahody","Maliny"]},
+  {q:"Banán, nebo jablko? 🍌🍎", a:["Banán","Jablko"]},
+  {q:"Meloun, nebo ananas? 🍉🍍", a:["Meloun","Ananas"]},
+  {q:"Sýr, nebo šunka? 🧀🍖", a:["Sýr","Šunka"]},
+  {q:"Polévka: vývar, nebo krémová? 🍜", a:["Vývar","Krémová"]},
+  {q:"Čokoládový dort, nebo cheesecake? 🍰", a:["Čokodort","Cheesecake"]},
+  {q:"Tortilla, nebo bageta? 🌯🥖", a:["Tortilla","Bageta"]},
+  {q:"Müsli, nebo vajíčka? 🥣🍳", a:["Müsli","Vajíčka"]},
+  {q:"Latte, nebo espresso? ☕", a:["Latte","Espresso"]},
+  {q:"Limonáda, nebo džus? 🥤🧃", a:["Limonáda","Džus"]},
+  {q:"Zelený čaj, nebo černý? 🍵", a:["Zelený","Černý"]},
+  {q:"Gumoví medvídci, nebo čokoláda? 🐻🍫", a:["Medvídci","Čokoláda"]},
+  {q:"Chipsy, nebo popcorn? 🥔🍿", a:["Chipsy","Popcorn"]},
+  {q:"Olivy? 🫒", a:["Mňam","Fuj"]},
+  {q:"Houby? 🍄", a:["Mňam","Fuj"]},
+  {q:"Ryby? 🐟", a:["Mňam","Fuj"]},
+  {q:"Kokos? 🥥", a:["Mňam","Fuj"]},
+  {q:"Lékořice? ⚫", a:["Mňam","Fuj"]},
+  {q:"Ostrov, nebo velkoměsto? 🏝️🌆", a:["Ostrov","Velkoměsto"]},
+  {q:"Řecko, nebo Itálie? 🇬🇷🇮🇹", a:["Řecko","Itálie"]},
+  {q:"Japonsko, nebo USA? 🗾🗽", a:["Japonsko","USA"]},
+  {q:"Safari, nebo polární záře? 🦁🌌", a:["Safari","Záře"]},
+  {q:"Kemp u vody, nebo chata v lese? 🏕️🌲", a:["Kemp","Chata"]},
+  {q:"Výhled na hory, nebo na moře? 🏔️🌊", a:["Hory","Moře"]},
+  {q:"Dlouhý let, nebo dlouhá jízda autem? ✈️🚗", a:["Let","Auto"]},
+  {q:"Batoh, nebo kufr? 🎒🧳", a:["Batoh","Kufr"]},
+  {q:"Papírová mapa, nebo navigace? 🗺️📍", a:["Mapa","Navigace"]},
+  {q:"Snowboard, nebo lyže? 🏂⛷️", a:["Snowboard","Lyže"]},
+  {q:"Bruslení, nebo sáňkování? ⛸️🛷", a:["Bruslení","Sáňkování"]},
+  {q:"Fitko, nebo cvičení venku? 🏋️🌳", a:["Fitko","Venku"]},
+  {q:"Jóga, nebo box? 🧘🥊", a:["Jóga","Box"]},
+  {q:"Tenis, nebo badminton? 🎾🏸", a:["Tenis","Badminton"]},
+  {q:"Šipky, nebo kulečník? 🎯🎱", a:["Šipky","Kulečník"]},
+  {q:"Bowling, nebo minigolf? 🎳⛳", a:["Bowling","Minigolf"]},
+  {q:"Šachy, nebo karty? ♟️🃏", a:["Šachy","Karty"]},
+  {q:"Pexeso, nebo puzzle? 🧩", a:["Pexeso","Puzzle"]},
+  {q:"Akční film, nebo romantika? 💥💘", a:["Akční","Romantika"]},
+  {q:"Sci-fi, nebo fantasy? 🚀🐉", a:["Sci-fi","Fantasy"]},
+  {q:"Dokumenty, nebo reality show? 🎥📺", a:["Dokumenty","Reality show"]},
+  {q:"Star Wars, nebo Star Trek? ⭐", a:["Star Wars","Star Trek"]},
+  {q:"Simpsonovi, nebo Přátelé? 📺", a:["Simpsonovi","Přátelé"]},
+  {q:"Kreslený film, nebo hraný? 🎨🎬", a:["Kreslený","Hraný"]},
+  {q:"Kino: přední řada, nebo zadní? 🎦", a:["Přední","Zadní"]},
+  {q:"Pop, nebo rock? 🎵🎸", a:["Pop","Rock"]},
+  {q:"Rádio, nebo vlastní playlist? 📻🎧", a:["Rádio","Playlist"]},
+  {q:"Koncert, nebo festival? 🎤🎪", a:["Koncert","Festival"]},
+  {q:"Klavír, nebo kytara? 🎹🎸", a:["Klavír","Kytara"]},
+  {q:"Na parket první, nebo počkat? 💃", a:["První!","Počkám"]},
+  {q:"Plánovač/diář, nebo všechno v hlavě? 📓🧠", a:["Diář","Hlava"]},
+  {q:"Poznámky na papír, nebo do mobilu? 📝📱", a:["Papír","Mobil"]},
+  {q:"E-mail, nebo dopis? 📧💌", a:["E-mail","Dopis"]},
+  {q:"Světlý režim, nebo tmavý? ☀️🌙", a:["Světlý","Tmavý"]},
+  {q:"Notebook, nebo stolní počítač? 💻🖥️", a:["Notebook","Stolní"]},
+  {q:"Nový mobil, nebo nové boty? 📱👟", a:["Mobil","Boty"]},
+  {q:"Tenisky, nebo sandály? 👟🩴", a:["Tenisky","Sandály"]},
+  {q:"Kšiltovka, nebo kulich? 🧢", a:["Kšiltovka","Kulich"]},
+  {q:"Hodinky, nebo náramek? ⌚📿", a:["Hodinky","Náramek"]},
+  {q:"Černá, nebo bílá? ⚫⚪", a:["Černá","Bílá"]},
+  {q:"Modrá, nebo zelená? 🔵🟢", a:["Modrá","Zelená"]},
+  {q:"Zlato, nebo stříbro? 🥇🥈", a:["Zlato","Stříbro"]},
+  {q:"Tetování? 🖋️", a:["Proč ne","Nikdy"]},
+  {q:"Piercing? 💎", a:["Proč ne","Nikdy"]},
+  {q:"Dlouhé vlasy, nebo krátké? 💇", a:["Dlouhé","Krátké"]},
+  {q:"Parfém sladký, nebo svěží? 🌸🍋", a:["Sladký","Svěží"]},
+  {q:"Horká vana, nebo rychlá sprcha? 🛁🚿", a:["Vana","Sprcha"]},
+  {q:"Svíčky, nebo světýlka? 🕯️✨", a:["Svíčky","Světýlka"]},
+  {q:"Květiny řezané, nebo v květináči? 💐🪴", a:["Řezané","Květináč"]},
+  {q:"Balkon, nebo zahrada? 🌇🌻", a:["Balkon","Zahrada"]},
+  {q:"Krb, nebo klimatizace? 🔥❄️", a:["Krb","Klimatizace"]},
+  {q:"Velký pes, nebo malý pes? 🐕🐶", a:["Velký","Malý"]},
+  {q:"Akvárium, nebo terárium? 🐠🦎", a:["Akvárium","Terárium"]},
+  {q:"Káva v posteli, nebo u stolu? ☕🛏️", a:["V posteli","U stolu"]},
+  {q:"Spíš na břiše, nebo na zádech? 😴", a:["Na břiše","Na zádech"]},
+  {q:"Jedna velká deka, nebo každý svou? 🛌", a:["Jedna velká","Každý svou"]},
+  {q:"Budík: hudba, nebo pípání? ⏰🎵", a:["Hudba","Pípání"]},
+  {q:"Víkendová snídaně: doma, nebo v kavárně? 🍳☕", a:["Doma","Kavárna"]},
+  {q:"Nákupy: seznam, nebo improvizace? 🛒📝", a:["Seznam","Improvizace"]},
+  {q:"Trhy, nebo supermarket? 🥕🏪", a:["Trhy","Supermarket"]},
+  {q:"Vařit, nebo objednat? 👩‍🍳🛵", a:["Vařit","Objednat"]},
+  {q:"Nádobí hned, nebo potom? 🍽️", a:["Hned","Potom"]},
+  {q:"Ponožky do páru, nebo jak přijdou? 🧦", a:["Do páru","Jak přijdou"]},
+  {q:"Zima: rukavice, nebo ruce v kapsách? 🧤", a:["Rukavice","Kapsy"]},
+  {q:"Deštník, nebo kapuce? ☂️🧥", a:["Deštník","Kapuce"]},
+];
+
+/* ⚙️ NASTAVENÍ: sem doplň svoje číslo v mezinárodním formátu bez mezer a bez +,
+   např. '420601234567'. Když zůstane prázdné, WhatsApp tlačítko se nezobrazí. */
+const WHATSAPP_CISLO = '';
+
+// 🚩 Checkpoint: po dosažení této otázky se při chybě vrací sem, ne na začátek
+const CHECKPOINT = 70;
+
+const historyPool = [
+  {q:"Bitva na Bílé hoře se odehrála v roce…", a:["1618","1620","1648","1526"], correct:1, type:"history"},
+  {q:"Prvním prezidentem Československa byl…", a:["Edvard Beneš","Klement Gottwald","T. G. Masaryk","Václav Havel"], correct:2, type:"history"},
+  {q:"Karel IV. založil pražskou univerzitu v roce…", a:["1348","1357","1212","1415"], correct:0, type:"history"},
+  {q:"Sametová revoluce proběhla v roce…", a:["1968","1948","1989","1993"], correct:2, type:"history"},
+  {q:"Jan Hus byl upálen v roce…", a:["1415","1420","1378","1402"], correct:0, type:"history"},
+  {q:"První světová válka začala v roce…", a:["1912","1914","1918","1939"], correct:1, type:"history"},
+  {q:"Kryštof Kolumbus doplul do Ameriky v roce…", a:["1492","1489","1502","1515"], correct:0, type:"history"},
+  {q:"Československo vzniklo v roce…", a:["1916","1918","1920","1938"], correct:1, type:"history"},
+  {q:"Přemysl Otakar II. měl přezdívku…", a:["král železný a zlatý","otec vlasti","zimní král","král cizinec"], correct:0, type:"history"},
+  {q:"Bitva u Waterloo (konec Napoleona) byla v roce…", a:["1805","1812","1815","1821"], correct:2, type:"history"},
+];
+
+const mathPool = [
+  {q:"Kolik je 13 × 17?", a:["211","221","231","201"], correct:1, type:"math"},
+  {q:"Vyřeš rovnici: 3x − 7 = 20. Kolik je x?", a:["7","8","9","10"], correct:2, type:"math"},
+  {q:"Kolik je 2⁵ + 3³?", a:["59","61","55","49"], correct:0, type:"math"},
+  {q:"Kolik je 15 % z 340?", a:["48","54","51","45"], correct:2, type:"math"},
+  {q:"Kolik je √169?", a:["13","14","12","17"], correct:0, type:"math"},
+  {q:"Kolik je 24 × 25?", a:["580","600","620","550"], correct:1, type:"math"},
+  {q:"Kolik je 12² + 5²?", a:["169","144","149","179"], correct:0, type:"math"},
+  {q:"Kolik je ¼ + ⅛?", a:["²⁄₁₂","³⁄₈","¹⁄₆","⁵⁄₈"], correct:1, type:"math"},
+];
+
+// 🌶️ Pikantní otázky – bez špatné odpovědi, ale odpovědi se počítají… 😏
+const spicyPool = [
+  {q:"Myslíš na mě někdy? 😏", a:["Občas","Pořád"]},
+  {q:"Co je na mně nejhezčí? 😏", a:["Úsměv","Všechno"]},
+  {q:"Polibek na prvním rande? 💋", a:["Proč ne","Uvidíme"]},
+  {q:"Držení za ruce na veřejnosti? 🤝", a:["Jasně","Stydím se"]},
+  {q:"Objetí zezadu? 🫂", a:["Miluju","Radši zepředu"]},
+  {q:"Pusa na čelo, nebo na tvář? 💋", a:["Na čelo","Na tvář"]},
+  {q:"Rande snů: západ slunce, nebo noční procházka? 🌅🌙", a:["Západ slunce","Noční procházka"]},
+  {q:"Pomalý tanec, i když to neumíme? 💫", a:["Jdu do toho","Stydím se"]},
+  {q:"Tanec v kuchyni při vaření? 🕺", a:["Rozhodně","Haha ne"]},
+  {q:"Zprávy na dobrou noc? 🌙", a:["Chci je","Cringe"]},
+  {q:"Roztomilé přezdívky? 🥰", a:["Miluju","Cringe"]},
+  {q:"Milostný dopis: romantika, nebo cringe? 💌", a:["Romantika","Cringe"]},
+  {q:"Kdo píše první „dobré ráno“? ☀️", a:["Já","Ty"]},
+  {q:"Sdílení jídla na rande? 🍝", a:["Jasně","Moje jídlo!"]},
+  {q:"První rande: kino, nebo večeře při svíčkách? 🎬🕯️", a:["Kino","Večeře"]},
+  {q:"Kdybych tě pozval na rande, řekneš…? 😏", a:["Ano","Jasně že ano"]},
+  {q:"Nejlepší místo na první pusu? 🌟", a:["Pod hvězdami","V dešti"]},
+  {q:"Flirtuješ radši očima, nebo zprávami? 👀💬", a:["Očima","Zprávami"]},
+  {q:"Piknik v parku, nebo vyhlídka nad městem? 🧺🌆", a:["Piknik","Vyhlídka"]},
+  {q:"Držet se za ruce v kině? 🎬🤝", a:["Celou dobu","Možná 😏"]},
+];
+
+// ☠️ Finální bossové – otázka č. 99 (při opakování jiný!)
+const bossPool = [
+  {q:"∫<sub>0</sub><sup>2π</sup>∫<sub>0</sub><sup>π</sup>∫<sub>0</sub><sup>3</sup> r²·sin θ &nbsp;dr dθ dφ&nbsp; = ?",
+   qPlain:"Trojný integrál ve sférických souřadnicích (r²·sinθ, meze 0–3, 0–π, 0–2π)",
+   a:["27π","36π","18π","12π"], correct:1, type:"boss"},
+  {q:"∫<sub>0</sub><sup>2π</sup>∫<sub>0</sub><sup>2</sup>∫<sub>0</sub><sup>3</sup> r &nbsp;dz dr dθ&nbsp; = ?",
+   qPlain:"Trojný integrál ve válcových souřadnicích (r, meze z 0–3, r 0–2, θ 0–2π)",
+   a:["12π","6π","24π","8π"], correct:0, type:"boss"},
+  {q:"∫<sub>0</sub><sup>2π</sup>∫<sub>0</sub><sup>π</sup>∫<sub>0</sub><sup>2</sup> r²·sin θ &nbsp;dr dθ dφ&nbsp; = ?",
+   qPlain:"Trojný integrál ve sférických souřadnicích (r²·sinθ, meze 0–2, 0–π, 0–2π)",
+   a:["³²⁄₃ π","¹⁶⁄₃ π","8π","32π"], correct:0, type:"boss"},
+];
+
+// 🌶️ Pikantní otázky – odpovídá se psaním, mění se při opakování
+const spicyPool = [
+  {q:"Co se ti na mně nejvíc líbí? 😏", minSlov:10, spicy:true, essay:true},
+  {q:"Kdy sis poprvé všimla, že se ti líbím? 👀", minSlov:10, spicy:true, essay:true},
+  {q:"Jak by vypadalo naše ideální rande? 💫", minSlov:10, spicy:true, essay:true},
+  {q:"Co bys se mnou chtěla zažít jako první? 🎢", minSlov:10, spicy:true, essay:true},
+  {q:"Jaká je tvoje nejoblíbenější vzpomínka na nás dva? 📸", minSlov:10, spicy:true, essay:true},
+  {q:"Co ti na mně přijde nejvíc přitažlivé? 🔥", minSlov:10, spicy:true, essay:true},
+  {q:"Kdybychom spolu vyrazili na výlet, kam by to bylo a proč? 🚗", minSlov:10, spicy:true, essay:true},
+  {q:"Co bys mi řekla, kdyby ses vůbec nestyděla? 🙈", minSlov:10, spicy:true, essay:true},
+];
+
+/* Sestavení kvízu – při každém (re)startu se běžné otázky zamíchají
+   a pasti se vyberou z bank náhodně, bez opakování v jednom průchodu
+   a pokud možno jiné než minule. */
+const lastTrap = {};
+const usedFun = new Set(); // otázky, které už v tomto sezení viděla
+
+function pickDifferent(pool, slot){
+  let q;
+  do { q = pool[Math.floor(Math.random()*pool.length)]; }
+  while(pool.length > 1 && q.q === lastTrap[slot]);
+  lastTrap[slot] = q.q;
+  return q;
+}
+
+/* Vybere pro dané sloty otázky BEZ opakování (každá max. jednou)
+   a snaží se, aby na stejném slotu nebyla tatáž otázka jako minule. */
+function pickSet(pool, slots){
+  let chosen;
+  for(let attempt = 0; attempt < 30; attempt++){
+    const sh = shuffle(pool);
+    chosen = slots.map((s, idx) => sh[idx]);
+    if(chosen.every((q, idx) => q.q !== lastTrap[slots[idx]])) break;
+  }
+  slots.forEach((s, idx) => { lastTrap[s] = chosen[idx].q; });
+  const map = {};
+  slots.forEach((s, idx) => { map[s] = chosen[idx]; });
+  return map;
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let j = a.length-1; j > 0; j--){
+    const k = Math.floor(Math.random()*(j+1));
+    [a[j],a[k]] = [a[k],a[j]];
+  }
+  return a;
+}
+
+let quiz = [];
+function buildQuiz(){
+  quiz = [];
+  // nejdřív otázky, které ještě neviděla; už viděné až jako záloha na konec
+  const unseen = fun.filter(x => !usedFun.has(x.q));
+  const seen = fun.filter(x => usedFun.has(x.q));
+  const funOrdered = shuffle(unseen).concat(shuffle(seen));
+  const historySlots = [10,30,50,70,90];
+  const mathSlots = [20,40,60,80];
+  const spicySlots = [15,35,55,75,95];
+  const historyChosen = pickSet(historyPool, historySlots);
+  const mathChosen = pickSet(mathPool, mathSlots);
+  const spicyChosen = pickSet(spicyPool, spicySlots);
+  let f = 0;
+  for(let n = 1; n <= 99; n++){
+    if(n === 99){
+      quiz.push({...pickDifferent(bossPool, 99), trap:true});
+    } else if(n === 98){
+      quiz.push({
+        q:"Napiš mi slohovku: <b>Co ke mně cítíš a jak to celé máš?</b>",
+        qPlain:"Slohovka: Co ke mně cítíš a jak to celé máš?",
+        essay:true, minSlov:90
+      });
+    } else if(historyChosen[n]){
+      quiz.push({...historyChosen[n], trap:true});
+    } else if(mathChosen[n]){
+      quiz.push({...mathChosen[n], trap:true});
+    } else if(spicyChosen[n]){
+      quiz.push({...spicyChosen[n], spicy:true});
+    } else {
+      quiz.push(funOrdered[f++]);
+    }
+  }
+}
+
+/* ====== LOGIKA ====== */
+const card = document.getElementById('card');
+let i = 0;
+let answers = [];
+let checkpointHit = false;
+
+function showIntro(){
+  card.innerHTML = `
+    <div class="counter">Velký kvíz 💌</div>
+    <h1 style="font-style:normal">100 otázek jen pro tebe</h1>
+    <ul class="rules">
+      <li>Čeká tě přesně <b>100 otázek</b>.</li>
+      <li>Většina nemá špatnou odpověď – odpovídej podle sebe. A pozor, občas to bude 🌶️ pikantní…</li>
+      <li>Občas se ale objeví <b>záludná otázka z dějepisu nebo matematiky</b> se 4 možnostmi. Ta správnou odpověď má!</li>
+      <li>Špatná odpověď na past = <b>návrat na začátek</b>. A pozor – otázky se zamíchají, takže to nepůjde jen tak proklikat!</li>
+      <li>Na otázce <b>70</b> je <b>checkpoint</b> – kdo se tam dostane, už se při chybě vrací jen k němu.</li>
+      <li>Na konci nezapomeň <b>poslat svoje odpovědi</b> autorovi kvízu.</li>
+    </ul>
+    <button class="primary" id="startBtn">Jdu do toho! 🚀</button>
+  `;
+  document.getElementById('startBtn').onclick = ()=>{
+    buildQuiz();
+    i = 0; answers = []; checkpointHit = false;
+    showQuestion();
+  };
+}
+
+function showQuestion(){
+  if(i >= quiz.length){ showFinal(); return; }
+  if(i === CHECKPOINT - 1 && !checkpointHit){
+    checkpointHit = true;
+    showCheckpoint();
+    return;
+  }
+  const item = quiz[i];
+  if(item.essay){ showEssay(item); return; }
+  const badge = item.trap
+    ? (item.type === 'boss' ? '<div class="history-badge">☠️ Finální boss – vysoká matematika!</div>'
+      : item.type === 'math' ? '<div class="history-badge">➗ Matematická past!</div>'
+                             : '<div class="history-badge">📜 Dějepisná past!</div>')
+    : (item.spicy ? '<div class="history-badge spicy">🌶️ Pikantní otázka!</div>' : '');
+  card.innerHTML = `
+    <div class="counter">Otázka <b>${i+1}</b> / 100</div>
+    ${badge}
+    <h1>${item.q}</h1>
+    <div class="answers ${item.trap ? 'grid4' : ''}" id="answers"></div>
+    <div class="progress"><span id="bar"></span></div>
+  `;
+  const aEl = document.getElementById('answers');
+  item.a.forEach((text, idx)=>{
+    const b = document.createElement('button');
+    b.textContent = text;
+    b.onclick = ()=>{
+      if(item.trap && idx !== item.correct){
+        showWrong(item.type);
+        return;
+      }
+      if(!item.trap) usedFun.add(item.q);
+      answers.push({n: i+1, q: item.q, qPlain: item.qPlain || item.q, odp: text});
+      i++;
+      showQuestion();
+    };
+    aEl.appendChild(b);
+  });
+  requestAnimationFrame(()=>{
+    document.getElementById('bar').style.width = (i/100*100) + '%';
+  });
+}
+
+const drafts = {}; // rozepsané texty – po návratu na checkpoint nemusí psát od nuly
+
+function pocetSlov(text){
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showEssay(item){
+  const badge = item.spicy
+    ? '<div class="history-badge spicy">🌶️ Pikantní otázka!</div>'
+    : '<div class="history-badge">✍️ Slohová práce!</div>';
+  const placeholder = item.spicy ? 'Jen se nestyď…' : 'Piš od srdce…';
+  const btnText = item.spicy ? 'Odpovědět 🌶️' : 'Odevzdat slohovku 💌';
+  card.innerHTML = `
+    <div class="counter">Otázka <b>${i+1}</b> / 100</div>
+    ${badge}
+    <h1>${item.q}</h1>
+    <p style="font-size:14px;color:#b06880;font-style:italic;margin-bottom:14px">
+      Minimálně <b>${item.minSlov} slov</b>. Dřív tě to dál nepustí. 😌</p>
+    <textarea id="essayBox" placeholder="${placeholder}"></textarea>
+    <div class="hint" id="wordCount">Napsáno: 0 / ${item.minSlov} slov</div>
+    <button class="primary" id="essayBtn" disabled>${btnText}</button>
+    <div class="progress"><span id="bar"></span></div>
+  `;
+  const box = document.getElementById('essayBox');
+  const btn = document.getElementById('essayBtn');
+  const wc = document.getElementById('wordCount');
+  box.value = drafts[item.q] || '';
+
+  const update = ()=>{
+    const n = pocetSlov(box.value);
+    wc.textContent = n >= item.minSlov
+      ? 'Napsáno: ' + n + ' slov – krásné! Můžeš odevzdat ❤️'
+      : 'Napsáno: ' + n + ' / ' + item.minSlov + ' slov';
+    btn.disabled = n < item.minSlov;
+  };
+  box.addEventListener('input', update);
+  update();
+
+  btn.onclick = ()=>{
+    if(pocetSlov(box.value) < item.minSlov) return;
+    drafts[item.q] = box.value;
+    answers.push({n: i+1, q: item.qPlain || item.q, qPlain: item.qPlain || item.q, odp: box.value.trim()});
+    i++;
+    showQuestion();
+  };
+
+  requestAnimationFrame(()=>{
+    document.getElementById('bar').style.width = (i/100*100) + '%';
+  });
+}
+
+function showCheckpoint(){
+  card.innerHTML = `
+    <div class="big">🚩</div>
+    <h1 style="font-style:normal">Checkpoint!</h1>
+    <p style="margin-bottom:24px;line-height:1.5">Dostal/a ses k otázce <b>70</b>.<br>
+    Od teď se při špatné odpovědi vracíš <b>sem</b>, ne na začátek. Zasloužený odpočinek… ale pasti nekončí! 😏</p>
+    <button class="primary" id="contBtn">Pokračovat ➡️</button>
+  `;
+  document.getElementById('contBtn').onclick = ()=>{ showQuestion(); };
+}
+
+function showWrong(type){
+  card.classList.add('wrong');
+  const cil = checkpointHit
+    ? 'zpátky na checkpoint – otázku <b>70</b>!'
+    : 'zpátky na otázku číslo <b>1</b>!';
+  const zprava = type === 'boss'
+    ? 'Otázka 99… tak blízko! Ale vysoká matematika nezná slitování:<br><b>' + cil + '</b> 💀'
+    : (type === 'math' ? 'Matika tě dostala' : 'Dějepis tě dostal') +
+      '… Pravidla jsou pravidla:<br>' + cil;
+  card.innerHTML = `
+    <div class="big">😈</div>
+    <h1>Špatně!</h1>
+    <p style="margin-bottom:24px;line-height:1.5">${zprava}</p>
+    <p style="margin-bottom:24px;font-size:14px;color:#b06880;font-style:italic">A nemysli si – otázky budou tentokrát jiné. 😏</p>
+    <button class="primary" id="againBtn">Zkusit znovu 🔁</button>
+  `;
+  document.getElementById('againBtn').onclick = ()=>{
+    card.classList.remove('wrong');
+    buildQuiz(); // nové zamíchání + jiné pasti
+    if(checkpointHit){
+      i = CHECKPOINT - 1;
+      answers = answers.filter(a => a.n < CHECKPOINT);
+    } else {
+      i = 0;
+      answers = [];
+    }
+    showQuestion();
+  };
+}
+
+const neTexty = ["Ne","Určitě? 🤨","Zkus to znovu 😏","Vážně?!","Tohle tlačítko nefunguje 😇","Ani náhodou 😄","Vzdej to ❤️"];
+let neIndex = 0;
+
+function showFinal(){
+  neIndex = 0;
+  card.innerHTML = `
+    <div class="counter">Otázka <b>100</b> / 100 💘</div>
+    <h1>Budeš se mnou chodit? ❤️</h1>
+    <div class="answers" id="answers"></div>
+    <div class="hint" id="hint"></div>
+    <div class="progress"><span style="width:100%"></span></div>
+  `;
+  const aEl = document.getElementById('answers');
+  const hintEl = document.getElementById('hint');
+
+  const ano = document.createElement('button');
+  ano.className = 'primary';
+  ano.textContent = 'Ano ❤️';
+  ano.onclick = ()=>{
+    answers.push({n:100, q:'Budeš se mnou chodit? ❤️', odp:'ANO! 🎉'});
+    showResult();
+  };
+
+  const ne = document.createElement('button');
+  ne.id = 'btnNe';
+  ne.textContent = 'Ne';
+
+  const utec = ()=>{
+    ne.classList.add('fly');
+    const pad = 20;
+    const w = ne.offsetWidth, h = ne.offsetHeight;
+    const x = pad + Math.random()*(window.innerWidth - w - pad*2);
+    const y = pad + Math.random()*(window.innerHeight - h - pad*2);
+    ne.style.left = x+'px';
+    ne.style.top = y+'px';
+    neIndex = Math.min(neIndex+1, neTexty.length-1);
+    ne.textContent = neTexty[neIndex];
+    ano.style.transform = 'scale(' + (1 + neIndex*0.12) + ')';
+    hintEl.textContent = 'Hmm… zdá se, že jde zmáčknout jenom jedno tlačítko 🙃';
+  };
+
+  ne.addEventListener('mouseenter', utec);
+  ne.addEventListener('click', utec);
+  ne.addEventListener('touchstart', (e)=>{ e.preventDefault(); utec(); }, {passive:false});
+
+  aEl.appendChild(ano);
+  aEl.appendChild(ne);
+}
+
+function vysledkovyText(){
+  return 'Moje odpovědi z Velkého kvízu 💌\n\n' +
+    answers.map(a => a.n + '. ' + (a.qPlain || a.q) + '\n→ ' + a.odp).join('\n') +
+    '\n\nOdpověď na otázku 100: ANO! ❤️';
+}
+
+function showResult(){
+  const list = answers.map(a =>
+    `<div><b>${a.n}.</b> ${a.qPlain || a.q}<br>→ <span class="odp">${escapeHtml(a.odp)}</span></div>`
+  ).join('');
+
+  card.innerHTML = `
+    <div class="big">💖</div>
+    <h1 style="font-style:normal">ANOOO! 🎉</h1>
+    <p style="line-height:1.5">Věděl jsem, že správná odpověď existuje jen jedna.<br>
+    Teď už zbývá poslední úkol…</p>
+    <p style="margin-top:12px"><b>Pošli mi svoje odpovědi! 💌</b></p>
+    <div class="answers" style="margin-top:16px" id="sendBtns"></div>
+    <div class="hint" id="copyHint"></div>
+    <div class="summary">${list}</div>
+  `;
+
+  const btns = document.getElementById('sendBtns');
+  const hint = document.getElementById('copyHint');
+
+  // 1) Sdílet (mobil) – otevře nabídku sdílení telefonu
+  if(navigator.share){
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'primary';
+    shareBtn.textContent = '📤 Poslat odpovědi';
+    shareBtn.onclick = async ()=>{
+      try{
+        await navigator.share({ title:'Velký kvíz 💌', text: vysledkovyText() });
+      }catch(e){ /* zavřeno uživatelem */ }
+    };
+    btns.appendChild(shareBtn);
+  }
+
+  // 2) WhatsApp – rovnou konverzace s autorem kvízu
+  if(WHATSAPP_CISLO){
+    const waBtn = document.createElement('button');
+    waBtn.className = 'primary';
+    waBtn.textContent = '💬 Poslat na WhatsApp';
+    waBtn.onclick = ()=>{
+      const url = 'https://wa.me/' + WHATSAPP_CISLO + '?text=' + encodeURIComponent(vysledkovyText());
+      window.open(url, '_blank');
+    };
+    btns.appendChild(waBtn);
+  }
+
+  // 3) Záloha – kopírování do schránky
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = '📋 Zkopírovat';
+  copyBtn.onclick = async ()=>{
+    try{
+      await navigator.clipboard.writeText(vysledkovyText());
+      hint.textContent = 'Zkopírováno! Teď to vlož do zprávy 😄';
+    }catch(e){
+      hint.textContent = 'Nepovedlo se zkopírovat – pošli aspoň screenshot seznamu níže.';
+    }
+  };
+  btns.appendChild(copyBtn);
+
+  confetti();
+}
+
+function confetti(){
+  const symbols = ['❤️','💖','💘','💕','🌹','✨'];
+  for(let n=0;n<60;n++){
+    setTimeout(()=>{
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      h.style.left = Math.random()*100 + 'vw';
+      h.style.fontSize = (16 + Math.random()*26) + 'px';
+      h.style.animationDuration = (2.5 + Math.random()*3) + 's';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(), 6000);
+    }, n*90);
+  }
+}
+
+showIntro();
+</script>
+</body>
+</html>
